@@ -1,0 +1,160 @@
+{
+  "info": {
+    "name": "Library API (Spring Boot)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "a2a4b1b6-14ba-4c0c-b0a1-1234567890ab"
+  },
+  "variable": [
+    {
+      "key": "base",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (Member)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"member@lib.com\", \"password\": \"member123\"}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) { pm.collectionVariables.set('token', json.token); }",
+                  "if (json.role)  { pm.collectionVariables.set('role', json.role); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login (Member/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"member@lib.com\", \"password\": \"member123\"}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) { pm.collectionVariables.set('token', json.token); }",
+                  "if (json.role)  { pm.collectionVariables.set('role', json.role); }"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "List Available Books",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{base}}/api/books?available=true"
+          }
+        },
+        {
+          "name": "Add Book (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{base}}/api/books",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"title\": \"Clean Code\", \"author\": \"Robert C. Martin\", \"isbn\": \"9780132350884\"}"
+            }
+          }
+        },
+        {
+          "name": "Borrow Book (id=1)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{base}}/api/books/1/borrow"
+          }
+        },
+        {
+          "name": "Return Book (id=1)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{base}}/api/books/1/return"
+          }
+        },
+        {
+          "name": "Swagger UI",
+          "request": {
+            "method": "GET",
+            "url": "{{base}}/swagger-ui.html"
+          }
+        }
+      ]
+    }
+  ]
+}

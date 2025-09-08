@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/librarydb
+    username: postgres
+    password: admin123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.format_sql: true
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+logging.level.org.springframework.security: INFO
+
+app:
+  jwt:
+    secret: "change-this-to-a-long-random-secret-string"
+    expiryMinutes: 120
