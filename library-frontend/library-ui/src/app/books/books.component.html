@@ -1,0 +1,75 @@
+<!-- src/app/books/books.component.html -->
+<div class="min-h-dvh bg-gray-50">
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-xl font-semibold">📚 Library</h1>
+    <div class="flex items-center gap-2">
+      <input [(ngModel)]="q" placeholder="Search title/author" class="border rounded-xl px-3 py-1">
+
+      <!-- 👇 Add this filter dropdown right here -->
+      <select [(ngModel)]="view" (change)="reload()" class="border rounded-xl px-3 py-1">
+        <option value="all">All</option>
+        <option value="available">Available</option>
+        <option value="borrowed">Borrowed</option>
+      </select>
+
+      <!-- call reload instead of load -->
+      <button class="rounded-xl px-3 py-1 bg-gray-800 text-white" (click)="reload()">Refresh</button>
+      <button class="rounded-xl px-3 py-1 bg-rose-600 text-white" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-4 space-y-6">
+    <p class="text-green-700" *ngIf="msg">{{ msg }}</p>
+
+    <!-- Admin-only add form -->
+    <section *ngIf="isAdmin" class="bg-white rounded-2xl shadow p-4">
+      <h2 class="font-semibold mb-2">Add Book (Admin)</h2>
+      <div class="flex flex-wrap gap-2">
+        <input [(ngModel)]="newBook.title" placeholder="Title" class="border rounded-xl px-3 py-1">
+        <input [(ngModel)]="newBook.author" placeholder="Author" class="border rounded-xl px-3 py-1">
+        <input [(ngModel)]="newBook.isbn" placeholder="ISBN" class="border rounded-xl px-3 py-1">
+        <button class="rounded-xl px-3 py-1 bg-indigo-600 text-white" (click)="add()">Add</button>
+      </div>
+    </section>
+
+    <!-- Books table -->
+    <section class="bg-white rounded-2xl shadow">
+      <table class="w-full text-left">
+        <thead class="border-b">
+          <tr>
+            <th class="p-3">Title</th><th>Author</th><th>ISBN</th><th>Status</th><th class="p-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of filtered()" class="border-b hover:bg-gray-50">
+            <td class="p-3">{{ b.title }}</td>
+            <td>{{ b.author }}</td>
+            <td>{{ b.isbn }}</td>
+            <td>
+              <span class="px-2 py-1 rounded-xl text-sm"
+                    [class.bg-emerald-100]="b.available" [class.text-emerald-700]="b.available"
+                    [class.bg-amber-100]="!b.available" [class.text-amber-700]="!b.available">
+                {{ b.available ? 'Available' : 'Borrowed' }}
+              </span>
+            </td>
+            <td class="p-3">
+              <!-- Borrow only when available -->
+              <button *ngIf="b.available"
+                      class="rounded-xl px-3 py-1 bg-blue-600 text-white"
+                      (click)="borrow(b.id)">
+                Borrow
+              </button>
+
+              <!-- Return when NOT available AND (admin OR you are the borrower) -->
+              <button *ngIf="!b.available && (isAdmin || b.borrowedByEmail === currentEmail)"
+                      class="rounded-xl px-3 py-1 bg-green-700 text-white"
+                      (click)="giveBack(b.id)">
+                Return
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
